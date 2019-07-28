@@ -747,7 +747,9 @@ class InterfaceParser
         return $this->tabSymbol.'protected $_communicator;'.$this->returnSymbol.
         $this->tabSymbol.'protected $_iVersion;'.$this->returnSymbol.
         $this->tabSymbol.'protected $_iTimeout;'.$this->returnSymbol.
-        $this->tabSymbol."public \$_servantName = \"$this->servantName\";".$this->doubleReturn.
+        $this->tabSymbol."public \$_servantName = \"$this->servantName\";".$this->returnSymbol.
+        $this->tabSymbol."public \$_contexts = [];".$this->returnSymbol.
+        $this->tabSymbol."public \$_statuses = [];".$this->doubleReturn.
         $this->tabSymbol.'public function __construct(CommunicatorConfig $config) {'.$this->returnSymbol.
 
         $this->doubleTab.'try {'.$this->returnSymbol.
@@ -1416,6 +1418,8 @@ class InterfaceParser
             $this->tripleTab.'$requestPacket->_iVersion = $this->_iVersion;'.$this->returnSymbol.
             $this->tripleTab.'$requestPacket->_funcName = __FUNCTION__;'.$this->returnSymbol.
             $this->tripleTab.'$requestPacket->_servantName = $this->_servantName;'.$this->returnSymbol.
+            $this->tripleTab.'$requestPacket->_contexts = $this->_contexts;'.$this->returnSymbol.
+            $this->tripleTab.'$requestPacket->_statuses = $this->_statuses;'.$this->returnSymbol.
             $this->tripleTab.'$encodeBufs = [];'.$this->doubleReturn;
 
         $commonPrefix = '$__buffer = TUPAPIWrapper::';
