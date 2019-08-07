@@ -16,6 +16,8 @@ class TestTafServiceServant {
 	protected $_iVersion;
 	protected $_iTimeout;
 	public $_servantName = "PHPTest.PHPServer.obj";
+	public $_contexts = [];
+	public $_statuses = [];
 
 	public function __construct(CommunicatorConfig $config) {
 		try {
@@ -34,6 +36,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$requestPacket->_encodeBufs = $encodeBufs;
@@ -52,6 +56,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putStruct("tags",1,$tags,$this->_iVersion);
@@ -75,6 +81,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putString("name",1,$name,$this->_iVersion);
@@ -96,6 +104,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putBool("a",1,$a,$this->_iVersion);
@@ -125,6 +135,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putInt64("a",1,$a,$this->_iVersion);
@@ -150,6 +162,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putShort("a",1,$a,$this->_iVersion);
@@ -182,6 +196,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putInt32("a",1,$a,$this->_iVersion);
@@ -218,6 +234,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$requestPacket->_encodeBufs = $encodeBufs;
@@ -240,6 +258,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$requestPacket->_encodeBufs = $encodeBufs;
@@ -260,6 +280,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putStruct("cs",1,$cs,$this->_iVersion);
@@ -290,6 +312,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$mcs_map = new \TARS_Map(\TARS::STRING,new ComplicatedStruct());
@@ -317,6 +341,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$__buffer = TUPAPIWrapper::putShort("a",1,$a,$this->_iVersion);
@@ -344,6 +370,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$requestPacket->_encodeBufs = $encodeBufs;
@@ -364,6 +392,8 @@ class TestTafServiceServant {
 			$requestPacket->_iVersion = $this->_iVersion;
 			$requestPacket->_funcName = __FUNCTION__;
 			$requestPacket->_servantName = $this->_servantName;
+			$requestPacket->_contexts = $this->_contexts;
+			$requestPacket->_statuses = $this->_statuses;
 			$encodeBufs = [];
 
 			$requestPacket->_encodeBufs = $encodeBufs;

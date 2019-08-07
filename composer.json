@@ -1,11 +1,15 @@
 {
     "name": "phptars/tars2php",
     "description": "php代码自动生成工具",
-    "version":"0.2.0-alpha2",
+    "version":"0.3.0",
     "authors": [
         {
             "name": "Chen Liang",
             "email": "liangchen@yuewen.com"
+        },
+        {
+            "name": "Yong Zhang",
+            "email": "bob_zy@yeah.net"
         }
     ],
     "minimum-stability": "dev",
