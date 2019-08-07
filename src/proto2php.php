@@ -79,6 +79,8 @@ class FileConverter
     public $preNamespaceStructs = [];
     public $preNamespaceEnums = [];
 
+    public $package;
+
     public function __construct($config)
     {
         $this->fromFile = $config['tarsFiles'][0];
@@ -155,12 +157,12 @@ class FileConverter
             exit;
         }
 
-        $package = '';
+        $this->package = '';
         while (($line = fgets($fp, 1024)) !== false) {
             $packageFlag = strpos(strtolower($line), 'package');
             if ($packageFlag !== false) {
-                $package = Utils::pregMatchByName('package', $line);
-                $package = str_replace(';', '', $package);
+                $this->package = Utils::pregMatchByName('package', $line);
+                $this->package = str_replace(';', '', $this->package);
             }
 
             // 正则匹配，发现是在service中
@@ -169,14 +171,14 @@ class FileConverter
                 $name = Utils::pregMatchByName('service', $line);
                 $interfaceName = $name.'Servant';
 
-                $basePath = '/' . $package . '.' . $name . '/';
+                $basePath = '/' . $this->package . '.' . $name . '/';
 
                 // 需要区分一下生成server还是client的代码
                 if ($this->withServant) {
 
                     $servantParser = new ServantParser($fp, $line, $this->namespaceName, $this->moduleName,
                         $interfaceName, $this->preStructs,
-                        $this->preEnums, $this->servantName, $this->preNamespaceEnums, $this->preNamespaceStructs);
+                        $this->preEnums, $this->servantName, $this->preNamespaceEnums, $this->preNamespaceStructs, ucfirst(str_replace('.', '\\', $this->package)));
 
                     $servant = $servantParser->parse();
                     file_put_contents($this->outputDir.$this->moduleName.'/'.$interfaceName.'.php', $servant);
@@ -184,7 +186,7 @@ class FileConverter
 
                     $interfaceParser = new InterfaceParser($fp, $line, $this->namespaceName, $this->moduleName,
                         $interfaceName, $this->preStructs,
-                        $this->preEnums, $this->servantName, $this->preNamespaceEnums, $this->preNamespaceStructs, $basePath);
+                        $this->preEnums, $this->servantName, $this->preNamespaceEnums, $this->preNamespaceStructs, $basePath, ucfirst(str_replace('.', '\\', $this->package)));
                     $interfaces = $interfaceParser->parse();
 
                     // 需要区分同步和异步的两种方式
@@ -251,7 +253,7 @@ class InterfaceParser
 
     public function __construct($fp, $line, $namespaceName, $moduleName,
                                 $interfaceName, $preStructs,
-                                $preEnums, $servantName, $preNamespaceEnums, $preNamespaceStructs, $basePath)
+                                $preEnums, $servantName, $preNamespaceEnums, $preNamespaceStructs, $basePath, $paramNamespace)
     {
         $this->fp = $fp;
         $this->namespaceName = $namespaceName;
@@ -267,6 +269,8 @@ class InterfaceParser
         $this->preNamespaceEnums = $preNamespaceEnums;
         $this->preNamespaceStructs = $preNamespaceStructs;
         $this->basePath = $basePath;
+
+        $this->paramNamespace = $paramNamespace;
     }
 
     public function copyAnnotation()
@@ -315,8 +319,7 @@ class InterfaceParser
         'use Tars\\client\\CommunicatorConfig;'.$this->returnSymbol.
         'use Tars\\client\\Communicator;'.$this->returnSymbol.
         'use Tars\\client\\grpc\\GrpcRequestPacket;'.$this->returnSymbol.
-        'use Tars\\client\\grpc\\GrpcResponsePacket;'.$this->returnSymbol.
-        $this->returnSymbol;
+        'use Tars\\client\\grpc\\GrpcResponsePacket;'.$this->returnSymbol;
     }
 
     public function getInterfaceBasic()
@@ -441,10 +444,10 @@ class InterfaceParser
 
     public function paramParser($params)
     {
-//        foreach ($params as $param) {
-//            // 同时要把它增加到本Interface的依赖中
-//            $this->extraUse .= 'use '.$this->namespaceName.'\\'.$param.';'.$this->returnSymbol;
-//        }
+        foreach ($params as $param) {
+            // 同时要把它增加到本Interface的依赖中
+            $this->extraUse .= 'use '.$this->paramNamespace.'\\'.$param.';'.$this->returnSymbol;
+        }
 
         return [
             'in' => [
@@ -591,10 +594,11 @@ class ServantParser
     public $funcSet = '';
 
     public $servantName;
+    public $paramNamespace;
 
     public function __construct($fp, $line, $namespaceName, $moduleName,
                                 $interfaceName, $preStructs,
-                                $preEnums, $servantName, $preNamespaceEnums, $preNamespaceStructs)
+                                $preEnums, $servantName, $preNamespaceEnums, $preNamespaceStructs, $paramNamespace)
     {
         $this->fp = $fp;
         $this->firstLine = $line;
@@ -610,6 +614,8 @@ class ServantParser
 
         $this->preNamespaceEnums = $preNamespaceEnums;
         $this->preNamespaceStructs = $preNamespaceStructs;
+
+        $this->paramNamespace = $paramNamespace;
     }
 
     public function getFileHeader($prefix = '')
@@ -750,7 +756,7 @@ class ServantParser
             return;
         }
 
-        $ret = preg_match("/rpc +(\w+)\((\w+)\) +returns +\((\w+)\) +{ *};/", $line, $match);
+        $ret = preg_match("/rpc +(\w+) *\((\w+)\) +returns +\((\w+)\) +{ *};?/", $line, $match);
         if (!$ret) {
             Utils::abnormalExit('error', '匹配正则失败，请检查， 内容：' . $line);
         }
@@ -766,7 +772,7 @@ class ServantParser
     {
         foreach ($params as $param) {
             // 同时要把它增加到本Interface的依赖中
-            $this->extraUse .= 'use '.$this->namespaceName.'\\'.$param.';'.$this->returnSymbol;
+            $this->extraUse .= 'use '.$this->paramNamespace.'\\'.$param.';'.$this->returnSymbol;
         }
 
         return [
@@ -847,7 +853,7 @@ class ServantParser
             $type = $param['type'];
             $valueName = $param['valueName'];
 
-            $annotation .= '\\' . $this->namespaceName . '\\' . $type . ' $' . $valueName;
+            $annotation .= '\\' . $this->paramNamespace . '\\' . $type . ' $' . $valueName;
             $bodyMiddle .= $annotation.$this->returnSymbol;
         }
 
@@ -856,7 +862,7 @@ class ServantParser
             $type = $param['type'];
             $valueName = $param['valueName'];
 
-            $annotation .= '\\' . $this->namespaceName . '\\' . $type . ' $' . $valueName;
+            $annotation .= '\\' . $this->paramNamespace . '\\' . $type . ' $' . $valueName;
             $annotation .= ' =out='.$this->returnSymbol;
             $bodyMiddle .= $annotation;
         }
