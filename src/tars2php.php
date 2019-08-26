@@ -387,9 +387,9 @@ class FileConverter
                 $includeFile = trim($tokens[1], "\" \r\n");
 
                 if (strtolower(substr(php_uname('a'), 0, 3)) === 'win') {
-                    exec('copy '.$includeFile.' '.$this->moduleName.'\\tars');
+                    exec('copy '.$includeFile.' '. $this->outputDir . $this->moduleName.'\\tars');
                 } else {
-                    exec('cp '.$includeFile.' '.$this->moduleName.'/tars');
+                    exec('cp '.$includeFile.' '. $this->outputDir . $this->moduleName.'/tars');
                 }
 
                 $includeParser = new IncludeParser();
@@ -809,7 +809,7 @@ class InterfaceParser
                 // 终止条件之1,宣告struct结束
                 elseif ($char == '}') {
                     // 需要贪心的读到"\n"为止
-                    while (($lastChar = fgetc($this->fp)) != "\n") {
+                    while (($lastChar = fgetc($this->fp)) != "\n" && ($lastChar !== false)) {
                         continue;
                     }
                     $this->state = 'end';
@@ -2423,9 +2423,6 @@ class ServantParser
         // 遍历所有的类型
         foreach (Utils::$wholeTypeMap as $key => $value) {
             if ($this->isStruct($word)) {
-                if (!in_array($word, $this->useStructs)) {
-                    $this->useStructs[] = $word;
-                }
                 $word = '\\'.$this->namespaceName.'\\classes\\'.$word;
                 break;
             } elseif (in_array($word, $this->preNamespaceStructs)) {
