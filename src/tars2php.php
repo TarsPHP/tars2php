@@ -1049,6 +1049,8 @@ class InterfaceParser
 
                 $word = 'new '.$word.'()';
                 break;
+            } elseif (in_array($word, $this->preEnums)) {
+                $word = 'int';
             } else {
                 $word = preg_replace('/\b'.$key.'\b/', $value, $word);
             }
@@ -1109,7 +1111,7 @@ class InterfaceParser
                             $state = 'init';
                             $word = '';
                         } elseif (Utils::isEnum($word, $this->preEnums)) {
-                            $type = 'unsigned byte';
+                            $type = 'int';
                             $state = 'init';
                             $word = '';
                         } elseif (in_array($word, $this->preNamespaceStructs)) {
@@ -1125,7 +1127,7 @@ class InterfaceParser
                             $state = 'init';
                             $word = '';
                         } elseif (in_array($word, $this->preNamespaceEnums)) {
-                            $type = 'unsigned byte';
+                            $type = 'int';
                             $state = 'init';
                             $word = '';
                         } elseif (Utils::isMap($word)) {
@@ -1223,6 +1225,13 @@ class InterfaceParser
             ];
 
             return $returnInfo;
+        } elseif (Utils::isEnum($returnType, $this->preEnums)) {
+            $returnInfo = [
+                'type' => 'int',
+                'wholeType' => 'int',
+                'valueName' => 'int'
+            ];
+            return $returnInfo;
         }
 
         $state = 'init';
@@ -1267,7 +1276,7 @@ class InterfaceParser
                         $state = 'init';
                         $word = '';
                     } elseif (Utils::isEnum($word, $this->preEnums)) {
-                        $type = 'unsigned byte';
+                        $type = 'int';
                         $state = 'init';
                         $word = '';
                     } elseif (in_array($word, $this->preNamespaceStructs)) {
@@ -1283,7 +1292,7 @@ class InterfaceParser
                         $state = 'init';
                         $word = '';
                     } elseif (in_array($word, $this->preNamespaceEnums)) {
-                        $type = 'unsigned byte';
+                        $type = 'int';
                         $state = 'init';
                         $word = '';
                     } elseif (Utils::isMap($word)) {
@@ -1967,6 +1976,11 @@ class StructParser
     public function VecMapReplace($word)
     {
         $word = trim($word);
+
+        if (Utils::isEnum($word, $this->preEnums)) {
+            $word = 'int';
+        }
+
         // 遍历所有的类型
         foreach (Utils::$wholeTypeMap as $key => $value) {
             $word = preg_replace('/\b'.$key.'\b/', $value, $word);
@@ -2433,6 +2447,8 @@ class ServantParser
                 }
                 $word = '\\'.$this->namespaceName.'\\classes\\'.$word;
                 break;
+            } elseif (in_array($word, $this->preEnums)) {
+                $word = 'int';
             } else {
                 $word = preg_replace('/\b'.$key.'\b/', $value, $word);
             }
@@ -2872,6 +2888,8 @@ class ServantParser
                 $annotation .= 'map '.$this->getExtType($wholeType);
             } elseif ($this->isStruct($type)) {
                 $annotation .= 'struct \\'.$this->namespaceName.'\\classes\\'.$type;
+            } elseif ($this->isEnum($type)) {
+                $annotation .= 'int';
             } else {
                 $annotation .= $type;
             }
