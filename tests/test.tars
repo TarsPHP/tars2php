@@ -1,0 +1,21 @@
+module testservant
+{
+    enum GoodType {
+        TYPE_ONE = 1,
+        TYPE_TWO = 2,
+        TYPE_THREE = 3
+    };
+
+    struct Foo {
+        0 optional GoodType goodType;
+        1 optional map<GoodType, long> goodTypeMap;
+        2 optional vector<GoodType> goodTypeList;
+        3 optional map<GoodType, vector<GoodType>> goodMap;
+    };
+
+    interface TestService
+    {
+        GoodType testFoo(GoodType goodType, Map<GoodType, GoodType> goodTypeMap, Map<int, int> intMap, out Foo foo, out GoodType goodTypeRet);
+    };
+
+}
