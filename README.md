@@ -1,11 +1,16 @@
+# Instructions for using tars2php
 
-# tars2php（自动生成php类工具）使用说明
 
-## 简介
-tars2php主要功能是通过tars协议文件，自动生成client端和server端php代码，方法大家使用。（server端主要为框架代码，实际业务逻辑需要自己补充实现）
 
-## 基本类型的映射
-如下是我们对基本类型的映射:
+Brief introduction
+
+The main function of tars2php is to automatically generate the PHP code of client side and server side through the tars protocol file, which is used by everyone. (the server side is mainly framework code, and the actual business logic needs to be supplemented and implemented by itself)
+
+
+
+## Mapping of basic types
+
+Here is our mapping of basic types:
 ```
     bool => \TARS::BOOL
     char => \TARS::CHAR
@@ -22,17 +27,24 @@ tars2php主要功能是通过tars协议文件，自动生成client端和server�
     map => \TARS::MAP
     struct => \TARS::STRUCT
 ```
-当我们需要标识具体的变量类型的时候,就需要用到这些基本的类型了,这些类型都是常量,从1-14。
+When we need to identify specific variable types, we need to use these basic types, which are constants, from 1-14.
 
-## 复杂类型的映射
-针对vector、map、struct三种基本的类型,有一些特殊的打包解包的机制,因此需要引入特别的数据类型:
-vector:
+
+
+##Mapping of complex types
+
+There are some special packaging and unpacking mechanisms for vector, map and struct. Therefore, special data types need to be introduced:
+
+Vector:
 ```
     vector => \TARS_VECTOR
-    它同时具有两个成员函数pushBack()和push_back()
-    入参为取决于vector本身是包含什么类型的数组
+    It has two member functions, push back() and push back()
 
-	例如：
+The input parameter depends on what type of array the vector itself contains
+
+
+
+For example:
     $shorts = ["test1","test2"];
     $vector = new \TARS_VECTOR(\TARS::STRING); //定义一个string类型的vector
     foreach ($shorts as $short) {
@@ -42,36 +54,42 @@ vector:
 map:
 ```
     map => \TARS_MAP
-    它同时具有两个成员函数pushBack()和push_back()
-    入参为取决于map本身包含什么类型
+   It has two member functions, push back() and push back()
 
-    例如：
+The input parameter depends on what type the map itself contains
+
+
+
+For example:
     $strings = [["test1"=>1],["test2"=>2]];
     $map = new \TARS_MAP(\TARS::STRING,\TARS::INT64); //定义一个key为string,value是int64的map
     foreach ($strings as $string) {
-        $map->pushBack($string); //依次把两个元素压入map中，注意pushBack接收一个array，且array只有一个元素
+        $map->pushBack($string); //Press two elements into the map in turn, and notice that pushback receives an array, and that array has only one element
     }
 ```
 
 struct:
 ```
     struct => \TARS_Struct
-    struct的构造函数比较特殊,接收classname和classfields两个参数
-    第一个描述名称,第二个描述struct内的变量的信息
+    sThe constructor of struct is special. It takes two parameters, classname and classfields
 
-   例如：
+The first describes the name, and the second describes the information of the variables in struct
+
+
+
+For example:
 	class SimpleStruct extends \TARS_Struct {
-		const ID = 0; //TARS文件中每个struct的tag
+		const ID = 0; //TARS file every struct的tag
 		const COUNT = 1;
 
-		public $id; //strcut中每个元素的值保存在这里
+		public $id; //strcutThe values of each element in are saved here
 		public $count; 
 
 		protected static $fields = array(
 			self::ID => array(
-				'name'=>'id',//struct中每个元素的名称
-				'required'=>true,//struct中每个元素是否必须，对应tars文件中的require和optional
-				'type'=>\TARS::INT64,//struct中每个元素的类型
+				'name'=>'id',//struct every element 
+				'required'=>true,//Whether each element in struct is required or not corresponds to the requirements and optional in the tars file
+				'type'=>\TARS::INT64,//struct every element type
 				),
 			self::COUNT => array(
 				'name'=>'count',
@@ -84,34 +102,49 @@ struct:
 			parent::__construct('App_Server_Servant.SimpleStruct', self::$fields);
 		}
 	}
-   
 ```
 
-## tars2php使用方法
-如果用户只有使用打包解包需求的,那么使用流程如下:
+## How to use tars2php
 
-0. 准备一份tars协议文件，例如example.tars
+If the user only uses packaging and unpacking requirements, the process is as follows:
 
-1. 编写一个tars.proto.php文件，这是用来生成代码的配置文件。
+
+
+0. Prepare a tar protocol file, such as example.tar
+
+
+
+1. Write a tar.proto.php file, which is the configuration file used to generate code.
+
 ```
-//本范例的servant name为PHPTest.PHPServer.obj
+
+//The service name of this example is phptest.phpserver.obj
 return array(
-    'appName' => 'PHPTest', //tars服务servant name 的第一部分
-    'serverName' => 'PHPServer', //tars服务servant name 的第二部分
-    'objName' => 'obj', //tars服务servant name 的第三部分
-    'withServant' => true,//决定是服务端,还是客户端的自动生成
-    'tarsFiles' => array(
-        './example.tars' //tars文件的地址
-    ),
-    'dstPath' => './server/', //生成php文件的位置
-    'namespacePrefix' => 'Server\servant', //生成php文件的命名空间前缀
+‘appName’=>‘PHPTest’，//tars name
+
+“server name”=>“PHPServer”，//tars servant name
+
+‘obj name’=>‘obj’，//tars slaver name
+
+“with servant”=>correct，//
+
+'tarsFiles'=>array(
+
+'./example.tars'//tars
+
+),
+
+'dstPath'=>'./server/'，//php
+
+'namespace prefix' = > 'server / service'，//php'
+
 );
 ```
-2. 执行php ./tars2php.php ./tars.proto.php
+2. exec php ./tars2php.php ./tars.proto.php
 
-3. 工具会根据servant name自动生成三级目录结构，demo中会在./server目录下生成PHPTest/PHPServer/obj/目录，obj目录下的classers是struct对应的php对象，tars目录是tars协议文件本身 。
+3. The tool will automatically generate three-level directory structure according to the service name. In the demo, the phptest / PHP server / obj / directory will be generated under the. / server directory. The classes under the obj directory are the PHP objects corresponding to struct, and the tar directory is the tar protocol file itself.
 
-如example.tars中的struct:
+For example, struct in example.tar:
 ```
 struct SimpleStruct {
     0 require long id=0;
@@ -127,19 +160,19 @@ struct SimpleStruct {
 namespace Server\servant\PHPTest\PHPServer\obj\classes;
 
 class SimpleStruct extends \TARS_Struct {
-	const ID = 0; //tars协议中的tag
+	const ID = 0; //tars protocal tag
 	const COUNT = 1;
 	const PAGE = 2;
 	
-	public $id; //元素的实际值
+	public $id; //Actual value of element
 	public $count; 
 	public $page; 
 	
 	protected static $_fields = array(
 		self::ID => array(
-			'name'=>'id', //tars协议中没个元素的name
-			'required'=>true, //tars协议中是require或者optional
-			'type'=>\TARS::INT64, //类型
+			'name'=>'id', //tars Name of no element in the agreement
+			'required'=>true, //tars Required or optional in the agreement
+			'type'=>\TARS::INT64, //type
 			),
 		self::COUNT => array(
 			'name'=>'count',
@@ -159,18 +192,29 @@ class SimpleStruct extends \TARS_Struct {
 }
 ```
 
-4. 以example.tars中的interface部分会自动生成单独的已interface命名的php文件。
-例如`int testLofofTags(LotofTags tags, out LotofTags outtags);`接口生成的方法如下
+4. The interface section in example. Tar automatically generates a separate interface named PHP file.
 
-server部分
+For example, 'int testlofoftags (lotoftags tags, out lotoftags outbound);' the interface generation method is as follows
+
+
+
+Part server
+
 ```
-<?php
-    //注意生成文件中的注释部分会在server启动的时候转换为php代码，如非必要，请勿修改.
-    //server部分具体实现需要自己继承完成,注释说明依次如下
-    
-    //参数为struct类型，对应$tags变量，对应的php对象在\Server\servant\PHPTest\PHPServer\obj\classes\LotofTags
-    //参数为struct类型，对应$outtags变量，对应的php对象在\Server\servant\PHPTest\PHPServer\obj\classes\LotofTags，是输出参数
-    //接口防止为int
+
+<? PHP
+
+//Note that the comment part of the generated file will be converted to PHP code when the server is started. If not necessary, do not modify it
+
+//The specific implementation of the server part needs to be inherited by itself. The notes are as follows
+
+
+
+//The parameter is of struct type, corresponding to $tags variable. The corresponding PHP object is in \ server \ service \ phptest \ phpserver \ obj \ classes \ lotoftags
+
+//The parameter is of struct type, corresponding to $outputs variable. The corresponding PHP object is in \ server \ service \ phptest \ phpserver \ obj \ classes \ lotoftags, which is the output parameter
+
+//Interface prevent to int
 	/**
 	 * @param struct $tags \Server\servant\PHPTest\PHPServer\obj\classes\LotofTags
 	 * @param struct $outtags \Server\servant\PHPTest\PHPServer\obj\classes\LotofTags =out=
@@ -178,26 +222,26 @@ server部分
 	 */
 	public function testLofofTags(LotofTags $tags,LotofTags &$outtags);
 ```
-client部分
+client part 
 ```
 <?php
 	try {
-		$requestPacket = new RequestPacket(); //构建请求包需要的参数
+		$requestPacket = new RequestPacket(); //Parameters required to build the request package
 		$requestPacket->_iVersion = $this->_iVersion;
 		$requestPacket->_funcName = __FUNCTION__;
 		$requestPacket->_servantName = $this->_servantName;
 		
 		$encodeBufs = [];
 
-		$__buffer = TUPAPIWrapper::putStruct("tags",1,$tags,$this->_iVersion); //打包第一个参数tags
+		$__buffer = TUPAPIWrapper::putStruct("tags",1,$tags,$this->_iVersion); //Package first parameter tags
 		$encodeBufs['tags'] = $__buffer;
 		
-		$requestPacket->_encodeBufs = $encodeBufs; //在请求包中设置请求bufs
+		$requestPacket->_encodeBufs = $encodeBufs; //Set request in request package bufs
 
-		$sBuffer = $this->_communicator->invoke($requestPacket,$this->_iTimeout); //发送请求包，接收返回包
+		$sBuffer = $this->_communicator->invoke($requestPacket,$this->_iTimeout); //Send request package, receive return package
 
-		$ret = TUPAPIWrapper::getStruct("outtags",2,$outtags,$sBuffer,$this->_iVersion); //从返回包中解出第一个输出参数outtags
-		return TUPAPIWrapper::getInt32("",0,$sBuffer,$this->_iVersion); //解出返回参数 返回参数 name是空，tag为0
+		$ret = TUPAPIWrapper::getStruct("outtags",2,$outtags,$sBuffer,$this->_iVersion); //Extract the first output parameter from the return packageouttags
+		return TUPAPIWrapper::getInt32("",0,$sBuffer,$this->_iVersion); //The return parameter name is empty and the tag is 0
 
 	}
 	catch (\Exception $e) {
