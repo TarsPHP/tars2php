@@ -329,26 +329,21 @@ class FileConverter
     public function initDir()
     {
         if (strtolower(substr(php_uname('a'), 0, 3)) === 'win') {
-            exec('mkdir '.$this->outputDir.$this->appName);
-            exec('mkdir '.$this->outputDir.$this->appName.'\\'.$this->serverName);
-            exec('DEL '.$this->outputDir.$this->appName.'\\'.$this->serverName.'\\'.$this->objName.'\\*.*');
-            exec('mkdir '.$this->outputDir.$this->appName.'\\'.$this->serverName.'\\'.$this->objName);
+            $this->outputDir = str_replace('/', '\\', $this->outputDir);
+            $this->fromFile = str_replace('/', '\\', $this->fromFile);
 
             $this->moduleName = $this->appName.'\\'.$this->serverName.'\\'.$this->objName;
+            exec('if exist ' . $this->outputDir . $this->moduleName . ' rd /s /q ' . $this->outputDir . $this->moduleName);
 
             exec('mkdir '.$this->outputDir.$this->moduleName.'\\classes');
             exec('mkdir '.$this->outputDir.$this->moduleName.'\\tars');
             exec('copy '.$this->fromFile.' '.$this->outputDir.$this->moduleName.'\\tars');
         } else {
-            exec('mkdir '.$this->outputDir.$this->appName);
-            exec('mkdir '.$this->outputDir.$this->appName.'/'.$this->serverName);
-            exec('rm -rf '.$this->outputDir.$this->appName.'/'.$this->serverName.'/'.$this->objName);
-            exec('mkdir '.$this->outputDir.$this->appName.'/'.$this->serverName.'/'.$this->objName);
-
             $this->moduleName = $this->appName.'/'.$this->serverName.'/'.$this->objName;
+            exec('rm -rf '.$this->outputDir.$this->moduleName);
 
-            exec('mkdir '.$this->outputDir.$this->moduleName.'/classes');
-            exec('mkdir '.$this->outputDir.$this->moduleName.'/tars');
+            exec('mkdir -p '.$this->outputDir.$this->moduleName.'/classes');
+            exec('mkdir -p '.$this->outputDir.$this->moduleName.'/tars');
             exec('cp '.$this->fromFile.' '.$this->outputDir.$this->moduleName.'/tars');
         }
 
